@@ -1,0 +1,7 @@
+module.exports = {
+    'secret': 'secretstring',
+    'host': "localhost",
+    'user': "dbuser",
+    "password": "password",
+    "database": "my_db"
+};
