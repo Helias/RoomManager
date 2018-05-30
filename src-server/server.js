@@ -28,10 +28,14 @@ app.use(bodyParser.json());
 // use morgan to log requests to the console
 app.use(morgan('dev'));
 
-// ######### API ROUTES #########
-
-// get an instance of the router for api routes
-var apiRoutes = express.Router();
+// CORS 
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization, Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 //Database connection
 const mc = mysql.createConnection({
@@ -42,26 +46,15 @@ const mc = mysql.createConnection({
 });
 mc.connect();
 
+// ######### API ROUTES #########
+
+// get an instance of the router for api routes
+var apiRoutes = express.Router();
 
 // ######### PUBLIC API #########
 
 // apply the routes to our application with the prefix /api
 app.use('/api', apiRoutes);
-
-apiRoutes.get("/test", function (req, res) {
-
-	mc.query('SELECT * from utenti', function (error, results, fields) {
-    if (error) throw error;
-
-    res.send({
-      "status": 200,
-      "error": null,
-      "response": results
-    });
-  });
-
-});
-
 
 // route to show a random message (GET http://localhost:8080/api/)
 apiRoutes.get('/', function (req, res) {
@@ -72,56 +65,41 @@ apiRoutes.get('/', function (req, res) {
 
 /*
  * /authenticate
- * name:      name of the user [string]
- * password:  password of the user [string]
+ * username [string]
+ * password [string]
  */
 apiRoutes.post('/authenticate', function (req, res) {
 
   // find the user
-  console.log(req.body.name);
-  User.findOne({
-    "name": req.body.name
-  }, function (err, user) {
+  console.log(req.body.username);
 
-    if (err) throw err;
+  console.log('SELECT * FROM utenti WHERE username = "' + req.body.username + '" AND password = "' + req.body.password + '"');
 
-    if (!user) {
+  mc.query('SELECT * FROM utenti WHERE username = "' + req.body.username + '" AND password = "' + req.body.password + '"', function (error, results, fields) {
+    if (error) throw error;
+
+    if (results[0].password != req.body.password) {
       res.json({
         success: false,
-        message: 'Authentication failed. User not found.'
+        message: 'Autenticazione fallita. Password errata.'
       });
-    } else if (user.blocked) {
+    } else {
+
+      // if user is found and password is right
+      // create a token
+      var token = jwt.sign(results[0], app.get('superSecret'), {
+        expiresIn: 1440 // expires in 24 hours
+      });
+
+      // return the information including token as JSON
       res.json({
-        success: false,
-        message: 'You have to verify your account first.'
+        success: true,
+        message: 'Autenticazione effettuata!',
+        token: token
       });
-    } else if (user) {
-
-      // check if password matches
-      if (user.password != req.body.password) {
-        res.json({
-          success: false,
-          message: 'Authentication failed. Wrong password.'
-        });
-      } else {
-
-        // if user is found and password is right
-        // create a token
-        var token = jwt.sign(user, app.get('superSecret'), {
-          expiresIn: 1440 // expires in 24 hours
-        });
-
-        // return the information including token as JSON
-        res.json({
-          success: true,
-          message: 'Enjoy your token!',
-          token: token
-        });
-      }
-
     }
-
   });
+
 });
 
 /*
@@ -133,11 +111,6 @@ apiRoutes.post('/authenticate', function (req, res) {
  */
 
 apiRoutes.post("/register", function (req, res) {
-
-  var appData = {
-    "error": 1,
-    "data": ""
-  };
 
   var userData = {
     "nome": req.body.first_name,
@@ -190,6 +163,19 @@ apiRoutes.use(function (req, res, next) {
 
 // ######### API PROTECTED #########
 
+apiRoutes.get("/test", function (req, res) {
+
+	mc.query('SELECT * from utenti', function (error, results, fields) {
+    if (error) throw error;
+
+    res.send({
+      "status": 200,
+      "error": null,
+      "response": results
+    });
+  });
+
+});
 
 
 // =======================
