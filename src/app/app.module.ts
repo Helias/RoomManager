@@ -7,10 +7,11 @@ import { HttpModule } from '@angular/http';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { LoginComponent } from './login/login.component';
+import * as globals from "./globals";
 
 const routes: Routes = [
-  { path: '',                 component: LoginComponent },
-  { path: 'nuovoArticolo',    component: LoginComponent } 
+  { path: '',        component: LoginComponent },
+  { path: 'test',    component: LoginComponent } 
 ];
 
 @NgModule({
@@ -27,6 +28,6 @@ const routes: Routes = [
   ],
   providers: [],
   bootstrap: [AppComponent],
-  exports: [ RouterModule ]
+  exports: [RouterModule]
 })
 export class AppModule { }
