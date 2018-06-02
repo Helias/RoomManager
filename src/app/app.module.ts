@@ -4,16 +4,18 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
+import * as globals from "./globals";
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { LoginComponent } from './login/login.component';
-import * as globals from "./globals";
 import { ContattiComponent } from './contatti/contatti.component';
+import { RoomComponent } from './room/room.component';
 
 const routes: Routes = [
-  { path: '',         component: LoginComponent },
-  { path: 'test',     component: LoginComponent },
+  { path: '',         component: RoomComponent },
+  { path: 'aule',     component: RoomComponent },
+  { path: 'admin',    component: LoginComponent },
   { path: 'contatti', component: ContattiComponent },
 ];
 
@@ -22,7 +24,8 @@ const routes: Routes = [
     AppComponent,
     NavbarComponent,
     LoginComponent,
-    ContattiComponent
+    ContattiComponent,
+    RoomComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

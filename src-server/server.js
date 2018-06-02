@@ -70,7 +70,6 @@ apiRoutes.get('/', function (req, res) {
  */
 apiRoutes.post('/authenticate', function (req, res) {
 
-  // find the user
   mc.query('SELECT * FROM utenti WHERE username = "' + req.body.username + '" AND password = "' + req.body.password + '"', function (error, results, fields) {
     if (error) throw error;
 
@@ -118,6 +117,51 @@ apiRoutes.post("/register", function (req, res) {
   mc.query("INSERT INTO utenti (`username`, `nome`, `cognome`, `email`, `password`) VALUES ('" + userData.username + "', '" + userData.nome + "', '" + userData.cognome + "', '" + userData.email + "', '" + userData.password + "')", function (error, results, fields) {
 		if (error) throw error;
 		res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+  });
+
+});
+
+apiRoutes.get("/aule", function(req, res) {
+  mc.query('SELECT * FROM aule', function (error, results, fields) {
+    if (error) throw error;
+
+    if (results.length == 0) {
+      res.json({
+        success: false,
+        message: 'Aule non trovate'
+      });
+    } else {
+      res.json({
+        success: true,
+        message: 'Aule',
+        aule: results
+      });
+    }
+  });
+
+});
+
+/*
+ * /prenotazioni
+ *
+ * date: date of the first day of weekend [string]
+*/
+apiRoutes.get("/prenotazioni", function(req, res) {
+  mc.query('SELECT * FROM prenotazioni ORDER BY id_aula', function (error, results, fields) {
+    if (error) throw error;
+
+    if (results.length == 0) {
+      res.json({
+        success: false,
+        message: 'Prenotazioni non trovate'
+      });
+    } else {
+      res.json({
+        success: true,
+        message: 'Aule e orari',
+        prenotazioni: results
+      });
+    }
   });
 
 });

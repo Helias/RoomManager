@@ -24,8 +24,9 @@ export class LoginComponent implements OnInit {
       username: this.username,
       password: this.password
     }).subscribe((data) => {
-//      if (data.token != null)
-//        localStorage.setItem('id_token', data.token);
+      console.log(data);
+      if (data["token"] != null)
+        localStorage.setItem('id_token', data["token"]);
     });
 
   }
