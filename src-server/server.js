@@ -71,14 +71,10 @@ apiRoutes.get('/', function (req, res) {
 apiRoutes.post('/authenticate', function (req, res) {
 
   // find the user
-  console.log(req.body.username);
-
-  console.log('SELECT * FROM utenti WHERE username = "' + req.body.username + '" AND password = "' + req.body.password + '"');
-
   mc.query('SELECT * FROM utenti WHERE username = "' + req.body.username + '" AND password = "' + req.body.password + '"', function (error, results, fields) {
     if (error) throw error;
 
-    if (results[0].password != req.body.password) {
+    if (results.length == 0) {
       res.json({
         success: false,
         message: 'Autenticazione fallita. Password errata.'
@@ -109,23 +105,24 @@ apiRoutes.post('/authenticate', function (req, res) {
  * password:  password of the user [string]
  * email:     email of the user [string]
  */
-
 apiRoutes.post("/register", function (req, res) {
 
   var userData = {
-    "nome": req.body.first_name,
-    "cognome": req.body.last_name,
+    "username": req.body.username,
+    "nome": req.body.nome,
+    "cognome": req.body.cognome,
     "email": req.body.email,
     "password": req.body.password,
   };
 
-  mc.query('INSERT INTO utenti (`nome`, `cognome`, `email`, `password`) SET ?', userData, function (error, results, fields) {
+  mc.query("INSERT INTO utenti (`username`, `nome`, `cognome`, `email`, `password`) VALUES ('" + userData.username + "', '" + userData.nome + "', '" + userData.cognome + "', '" + userData.email + "', '" + userData.password + "')", function (error, results, fields) {
 		if (error) throw error;
 		res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
   });
 
 });
 
+/*
 // route middleware to verify a token
 apiRoutes.use(function (req, res, next) {
 
@@ -160,6 +157,7 @@ apiRoutes.use(function (req, res, next) {
 
   }
 });
+*/
 
 // ######### API PROTECTED #########
 

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import * as globals from "../globals";
 
 @Component({
@@ -8,15 +10,28 @@ import * as globals from "../globals";
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private http:Http) {
-//    Observable<Response> ob = this.http.post("test", book, options);
-  }
+  constructor(private http:HttpClient) {}
 
   ngOnInit() {
   }
 
+  username = "";
+  password = "";
+
   public login() {
-    console.log(globals.API);
+
+    this.http.post(globals.API + "authenticate", {
+      username: this.username,
+      password: this.password
+    }).subscribe((data) => {
+//      if (data.token != null)
+//        localStorage.setItem('id_token', data.token);
+    });
+
+  }
+
+  public logout() {
+    localStorage.removeItem("id_token");
   }
 
 }
