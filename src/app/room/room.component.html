@@ -17,6 +17,11 @@
           <tbody>
             <tr *ngFor="let a of p[getFirstKey(p)]">
               <td>{{ a.nome }}</td>
+              <td *ngFor="let n of a.prenotazioni_fill" [colSpan]="n[1]" [ngClass]="{ 'bg-primary' : n[3], 'prenotato' : n[3] }" [hidden]="!n[0]">
+                <span>
+                  {{ n[2] }}
+                </span>
+              </td>
             </tr>
           </tbody>
         </table>

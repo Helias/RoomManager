@@ -15,6 +15,7 @@ export class RoomComponent implements OnInit {
   weekDay = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   orari = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
   prenotazioni = [];
+  prenotazioni_fill = [];
 
   getMonday(d) {
     d = new Date(d);
@@ -102,14 +103,43 @@ export class RoomComponent implements OnInit {
           }
         }
 
-        console.log(pren);
-
         var index = 0;
-        for (let i in pren) {
+        for (var i in pren) {
           this.prenotazioni[index] = {};
           this.prenotazioni[index][i] = pren[i];
+
+          for (var k = 0; k < pren[i].length; k++) {
+            this.prenotazioni[index][i][k].prenotazioni_fill = [];
+
+            for (let j = 0; j < 12; j++) {
+              this.prenotazioni[index][i][k].prenotazioni_fill[j] = [];
+              this.prenotazioni[index][i][k].prenotazioni_fill[j][0] = true;
+              this.prenotazioni[index][i][k].prenotazioni_fill[j][1] = 1;
+              this.prenotazioni[index][i][k].prenotazioni_fill[j][2] = "";
+              this.prenotazioni[index][i][k].prenotazioni_fill[j][3] = false;
+            }
+
+            for (let j in this.prenotazioni[index][i][k].p) {
+              let colspan = parseInt(this.prenotazioni[index][i][k].p[j].orario2.substring(0, 2)) - parseInt(this.prenotazioni[index][i][k].p[j].orario1.substring(0, 2))
+              let tdIndex = parseInt(this.prenotazioni[index][i][k].p[j].orario1.substring(0, 2)) - 8;
+
+              this.prenotazioni[index][i][k].prenotazioni_fill[tdIndex][0] = true;
+              this.prenotazioni[index][i][k].prenotazioni_fill[tdIndex][1] = colspan;
+              this.prenotazioni[index][i][k].prenotazioni_fill[tdIndex][2] = this.prenotazioni[index][i][k].p[j].descrizione + " (" + this.prenotazioni[index][i][k].p[j].professore + ")";
+              this.prenotazioni[index][i][k].prenotazioni_fill[tdIndex][3] = true;
+
+              for (let t = tdIndex+1; t < (tdIndex+colspan); t++) {
+                this.prenotazioni[index][i][k].prenotazioni_fill[t][0] = false;
+                this.prenotazioni[index][i][k].prenotazioni_fill[t][1] = 0;
+              }
+
+            }
+          }
+
           index++;
         }
+
+        console.log(this.prenotazioni);
       });
 
     });

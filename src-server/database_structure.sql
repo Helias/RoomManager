@@ -19,5 +19,6 @@ CREATE TABLE `prenotazioni` (
     `giorno` VARCHAR(25),
     `orario1` VARCHAR(25),
     `orario2` VARCHAR(25),
-    `professore` VARCHAR(25)
+    `professore` VARCHAR(25),
+    `descrizione` VARCHAR(255)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
