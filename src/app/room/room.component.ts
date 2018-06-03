@@ -12,9 +12,9 @@ export class RoomComponent implements OnInit {
 
   constructor(private http:HttpClient) { }
 
+  weekDay = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   orari = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
-  aule = [];
-  giorni = [];
+  prenotazioni = [];
 
   getMonday(d) {
     d = new Date(d);
@@ -36,6 +36,20 @@ export class RoomComponent implements OnInit {
     return n.toString();
   }
 
+  getFirstKey(o) {
+    return Object.keys(o)[0];
+  }
+
+  convertStringToDate(d) {
+    return d.substring(6, 8) + "/" + d.substring(4,6) + "/" + d.substring(0,4);
+  }
+
+  getDate(d) {
+    let date = d.split("/");
+
+    return this.weekDay[new Date(date[2], date[1] - 1, date[0]).getDay()];
+  }
+
   ngOnInit() {
 
     var date = this.getMonday(new Date());
@@ -55,29 +69,47 @@ export class RoomComponent implements OnInit {
 
     this.http.get(globals.API + "aule").subscribe((data) => {
 
-      this.aule = data["aule"];
+      var aule = data["aule"];
 
       this.http.get(globals.API + "prenotazioni?giorno1=" + startWeek + "&giorno2=" + finishWeek).subscribe((data) => {
-        let pren = [];
+        var pren = {};
 
-        for (var i in this.aule) {
-          this.aule[i].p = [];
+        for (var g in giorni) {
 
-          var aulaSelected = false;
+          var val = giorni[g];
+          pren[val] = [];
 
-          for (let j in data["prenotazioni"]) {
-            if (data["prenotazioni"][j].id_aula == this.aule[i].ID) {
-              aulaSelected = true;
+          for (var i in aule) {
+            pren[val][i] = Object.assign([], aule[i]);
 
-              this.aule[i].p.push(data["prenotazioni"][j]);
+            if (pren[val][i].p == null)
+              pren[val][i].p = [];
+
+            var aulaSelected = false;
+
+            for (var j in data["prenotazioni"]) {
+              if (data["prenotazioni"][j].giorno == val && data["prenotazioni"][j].id_aula == pren[val][i].ID) {
+                  aulaSelected = true;
+
+                pren[val][i].p.push(data["prenotazioni"][j]);
+              }
+              else if (aulaSelected) {
+                aulaSelected = false;
+                break;
+              }
             }
-            else if (aulaSelected) {
-              aulaSelected = false;
-              break;
-            }
+
           }
         }
-        console.log(this.aule);
+
+        console.log(pren);
+
+        var index = 0;
+        for (let i in pren) {
+          this.prenotazioni[index] = {};
+          this.prenotazioni[index][i] = pren[i];
+          index++;
+        }
       });
 
     });

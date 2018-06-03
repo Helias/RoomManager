@@ -5,19 +5,22 @@
     <div class="col-12 text-center">
       <h2>Aulario</h2>
 
-      <table class="table table-bordered table-striped">
-        <thead>
-          <tr>
-            <th>Giorno</th>
-            <th class="orari" *ngFor="let o of orari">{{ o }}</th>
-          </tr>
-        </thead>
-        <tbody>
-
-        </tbody>
-
-        
-      </table>
+      <div *ngFor="let p of prenotazioni">
+        <br>
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>{{ getDate(convertStringToDate(getFirstKey(p))) }} <br> {{ convertStringToDate(getFirstKey(p)) }}</th>
+              <th class="orari" *ngFor="let o of orari">{{ o }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let a of p[getFirstKey(p)]">
+              <td>{{ a.nome }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
     </div>
   </div>
