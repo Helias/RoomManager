@@ -138,8 +138,6 @@ export class RoomComponent implements OnInit {
 
           index++;
         }
-
-        console.log(this.prenotazioni);
       });
 
     });
