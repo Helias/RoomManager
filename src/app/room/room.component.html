@@ -5,6 +5,13 @@
     <div class="col-12 text-center">
       <h2>Aulario</h2>
 
+      <button class="btn btn-lg btn-primary float-left" (click)="setWeek('prev')"><fa name="chevron-left"></fa> &nbsp; Settimana precedente</button>
+      {{ currentDate | date }} - {{ sunday | date }}
+      <button class="btn btn-lg btn-primary float-right" (click)="setWeek('next')">Settimana successiva &nbsp; <fa name="chevron-right"></fa></button>
+
+      <br>
+      <br>
+
       <div *ngFor="let p of prenotazioni">
         <br>
         <table class="table table-bordered table-striped">

@@ -17,6 +17,10 @@ export class RoomComponent implements OnInit {
   prenotazioni = [];
   prenotazioni_fill = [];
 
+  currentDate = this.getMonday(new Date());
+  currentWeek = this.currentDate.getFullYear().toString() + this.fixNum(this.currentDate.getMonth() + 1) + this.fixNum(this.currentDate.getDate());
+  sunday = this.getSunday(new Date());
+
   getMonday(d) {
     d = new Date(d);
     var day = d.getDay(),
@@ -51,10 +55,29 @@ export class RoomComponent implements OnInit {
     return this.weekDay[new Date(date[2], date[1] - 1, date[0]).getDay()];
   }
 
-  ngOnInit() {
+  setWeek(direct) {
 
-    var date = this.getMonday(new Date());
-    var startWeek = date.getFullYear().toString() + this.fixNum(date.getMonth() + 1) + this.fixNum(date.getDate());
+    if (direct == "prev") {
+      this.currentDate.setDate(this.currentDate.getDate() - 7);
+      this.sunday.setDate(this.sunday.getDate() - 7);
+    }
+    else {
+      this.currentDate.setDate(this.currentDate.getDate() + 7);
+      this.sunday.setDate(this.sunday.getDate() + 7);
+    }
+
+    this.currentDate = new Date(this.currentDate);
+    this.sunday = new Date(this.sunday);
+
+    this.currentWeek = this.currentDate.getFullYear().toString() + this.fixNum(this.currentDate.getMonth() + 1) + this.fixNum(this.currentDate.getDate());
+
+    this.loadTimetables();
+  }
+
+  loadTimetables() {
+
+    var date = new Date(this.currentDate.getTime());
+    var startWeek = this.currentWeek;
 
     var giorni = [];
     giorni.push(startWeek);
@@ -141,7 +164,10 @@ export class RoomComponent implements OnInit {
       });
 
     });
+  }
 
+  ngOnInit() {
+    this.loadTimetables();
   }
 
 }
