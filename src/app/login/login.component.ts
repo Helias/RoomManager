@@ -12,11 +12,10 @@ export class LoginComponent implements OnInit {
 
   constructor(private http:HttpClient) {}
 
-  ngOnInit() {
-  }
-
   username = "";
   password = "";
+
+  ngOnInit() {}
 
   public login() {
 
@@ -29,10 +28,6 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('id_token', data["token"]);
     });
 
-  }
-
-  public logout() {
-    localStorage.removeItem("id_token");
   }
 
 }
