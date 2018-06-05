@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import * as globals from "../globals";
 
 @Component({
@@ -10,7 +11,7 @@ import * as globals from "../globals";
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private http:HttpClient) {}
+  constructor(private http:HttpClient, private router: Router) {}
 
   username = "";
   password = "";
@@ -23,9 +24,11 @@ export class LoginComponent implements OnInit {
       username: this.username,
       password: this.password
     }).subscribe((data) => {
-      console.log(data);
-      if (data["token"] != null)
+
+      if (data["token"] != null) {
         localStorage.setItem('id_token', data["token"]);
+        this.router.navigate(['admin']);
+      }
     });
 
   }
