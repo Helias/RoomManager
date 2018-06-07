@@ -20,10 +20,7 @@ export class LoginComponent implements OnInit {
 
   public login() {
 
-    this.http.post(globals.API + "authenticate", {
-      username: this.username,
-      password: this.password
-    }).subscribe((data) => {
+    this.http.get(globals.API + "auth?username=" + this.username + "&password=" + this.password).subscribe((data) => {
 
       if (data["token"] != null) {
         localStorage.setItem('id_token', data["token"]);

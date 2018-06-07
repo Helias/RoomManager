@@ -7,21 +7,76 @@
       
       <h2>Prenota Aula</h2>
 
-      <form class="form-inline">
-        <div>
-          <label>Data:</label>
-          <input type="date" class="form-control mb-2 mr-sm-2 mb-sm-0" id="inlineFormInput" placeholder="01/01/2018">
+      <br>
+
+      <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="form-inline justify-content-center">
+              <label>Data:</label>
+              <input type="date" class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder="01/01/2018">  
+            </div>
         </div>
+      </div>
 
-        <br>
-        <br>
+      <br>
 
-        <label>Orario:</label>
-        <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder="01/01/2018">
-        <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder="01/01/2018">
-      
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
+      <div class="row justify-content-center">
+        <div class="col-12">
+
+          <div class="form-inline justify-content-center">
+            <label>Orario</label>
+            &nbsp; da: &nbsp; 
+            <select>
+              <option value="08:00">08:00</option>
+              <option value="09:00">09:00</option>
+              <option value="10:00">10:00</option>
+              <option value="11:00">11:00</option>
+              <option value="12:00">12:00</option>
+              <option value="13:00">13:00</option>
+              <option value="14:00">14:00</option>
+              <option value="15:00">15:00</option>
+              <option value="16:00">16:00</option>
+              <option value="17:00">17:00</option>
+              <option value="18:00">18:00</option>
+              <option value="19:00">19:00</option>
+            </select>
+            &nbsp; a: &nbsp;
+            <select>
+                <option value="08:00">08:00</option>
+                <option value="09:00">09:00</option>
+                <option value="10:00">10:00</option>
+                <option value="11:00">11:00</option>
+                <option value="12:00">12:00</option>
+                <option value="13:00">13:00</option>
+                <option value="14:00">14:00</option>
+                <option value="15:00">15:00</option>
+                <option value="16:00">16:00</option>
+                <option value="17:00">17:00</option>
+                <option value="18:00">18:00</option>
+                <option value="19:00">19:00</option>
+              </select>
+            </div>
+
+        </div>
+      </div>
+
+      <br>
+
+      <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="form-inline justify-content-center">
+              <label>Aula: &nbsp; </label>
+              <select>
+                <option *ngFor="let a of aule" [value]="a.ID">{{ a.nome }}</option>
+              </select>
+            </div>
+        </div>
+      </div>
+
+    
+      <br>
+
+      <button type="submit" class="btn btn-primary" (click)="prenota()">Prenota</button>
     </div>
   </div>
 

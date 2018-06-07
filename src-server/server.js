@@ -28,15 +28,6 @@ app.use(bodyParser.json());
 // use morgan to log requests to the console
 app.use(morgan('dev'));
 
-// CORS 
-app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization, Content-Type');
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
-});
-
 //Database connection
 const mc = mysql.createConnection({
   host     : config.host,
@@ -56,6 +47,15 @@ var apiRoutes = express.Router();
 // apply the routes to our application with the prefix /api
 app.use('/api', apiRoutes);
 
+// CORS 
+apiRoutes.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization, Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
+
 // route to show a random message (GET http://localhost:8080/api/)
 apiRoutes.get('/', function (req, res) {
   res.json({
@@ -64,13 +64,15 @@ apiRoutes.get('/', function (req, res) {
 });
 
 /*
- * /authenticate
+ * /auth
  * username [string]
  * password [string]
  */
-apiRoutes.post('/authenticate', function (req, res) {
+apiRoutes.get('/auth', function (req, res, next) {
 
-  mc.query('SELECT * FROM utenti WHERE username = "' + req.body.username + '" AND password = "' + req.body.password + '"', function (error, results, fields) {
+  console.log('SELECT * FROM utenti WHERE username = "' + req.query.username + '" AND password = "' + req.query.password + '"');
+
+  mc.query('SELECT * FROM utenti WHERE username = "' + req.query.username + '" AND password = "' + req.query.password + '"', function (error, results, fields) {
     if (error) throw error;
 
     if (results.length == 0) {
@@ -166,7 +168,6 @@ apiRoutes.get("/prenotazioni", function(req, res) {
 
 });
 
-/*
 // route middleware to verify a token
 apiRoutes.use(function (req, res, next) {
 
@@ -190,7 +191,7 @@ apiRoutes.use(function (req, res, next) {
       }
     });
 
-  } else {
+     } else {
 
     // if there is no token
     // return an error
@@ -201,20 +202,48 @@ apiRoutes.use(function (req, res, next) {
 
   }
 });
-*/
+
 
 // ######### API PROTECTED #########
 
-apiRoutes.get("/test", function (req, res) {
+/*
+ * /prenota
+ * data: date of the day [string]
+ * orario1: start time [string]
+ * orario2: finish time [string]
+ * id_aula: id of the room [integer]
+ */
+apiRoutes.post("/prenota", function (req, res) {
 
-	mc.query('SELECT * from utenti', function (error, results, fields) {
+  var data = req.body.data;
+  var orario1 = req.body.orario1;
+  var orario2 = req.body.orario2;
+  var id_aula = req.body.id_aula;
+
+	mc.query('SELECT * \
+  FROM prenotazioni \
+  WHERE giorno="' + data + '" AND id_aula=' + id_aula + ' \
+  AND ( \
+       (' + orario1 + ' = SUBSTRING(orario1, 1, 2) AND ' + orario2 + ' = SUBSTRING(orario2, 1, 20)) -- stesso orario \
+    OR	 (' + orario1 + ' > SUBSTRING(orario1, 1, 2) AND ' + orario1 + ' < SUBSTRING(orario2, 1, 2)) 	-- ' + orario1 + ' compreso tra orario1 e orario2 \
+    OR   (' + orario2 + ' > SUBSTRING(orario1, 1, 2) AND ' + orario2 + ' < SUBSTRING(orario2, 1, 2))  -- ' + orario2 + ' compreso tra orario1 e orario2 \
+    OR	 (SUBSTRING(orario1, 1, 2) > ' + orario1 + ' AND SUBSTRING(orario1, 1, 2) < ' + orario2 + ') 	-- orario1 compreso tra ' + orario1 + ' e ' + orario2 + ' \
+    OR	 (SUBSTRING(orario2, 1, 2) > ' + orario1 + ' AND SUBSTRING(orario2, 1, 2) < ' + orario2 + ')	-- orario2 compreso tra ' + orario1 + ' e ' + orario2 + ' \
+  );', function (error, results, fields) {
     if (error) throw error;
 
-    res.send({
-      "status": 200,
-      "error": null,
-      "response": results
-    });
+    if (results.length == 0) {
+
+    }
+    else {
+      
+      res.send({
+        "status": 200,
+        "error": "",
+        "response": results
+      });
+    }
+
   });
 
 });
