@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SimpleNotificationsModule } from 'angular2-notifications';
 import { AuthGuard } from './auth-guard.service';
 import * as globals from "./globals";
@@ -39,6 +40,7 @@ const routes: Routes = [
     FormsModule,
     HttpClientModule,
     AngularFontAwesomeModule,
+    BrowserAnimationsModule,
     BsDropdownModule.forRoot(),
     SimpleNotificationsModule.forRoot()
   ],

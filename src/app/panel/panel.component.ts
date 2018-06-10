@@ -32,38 +32,27 @@ export class PanelComponent implements OnInit {
   }
 
   prenota() {
-    console.log(this.roomReserv);
-
     if (this.data != null && this.data != "")
       this.roomReserv.data = this.data.replace(/-/g, "");
     else {
       console.log("errore: inserisci data!");
+      this._notifications.create("Prenotazione", "Inserisci la data!", "error", globals.confNotifications);
       return;
     }
 
     if (this.roomReserv.id_aula == null || this.roomReserv.id_aula == "") {
-      console.log("errore: inserisci aula!");
+      this._notifications.create("Prenotazione", "Inserisci l'aula!", "error", globals.confNotifications);
       return;
     }
 
     if (this.roomReserv.orario1.substring(0, 2) >= this.roomReserv.orario2.substring(0, 2)) {
-      /*
-      this._notifications.error('Prenotazione', 'Intervallo di orario errato', {
-        timeOut: 2000,
-        showProgressBar: true,
-        pauseOnHover: true,
-        clickToClose: true
-      });
-      */
-      console.log("errore!");
+      this._notifications.create('Prenotazione', 'Intervallo di orario errato', 'error', globals.confNotifications);
       return;
     }
 
-    // this._notifications.create("Prenotazione", "Prenotazione in corso...", success, 2000);
-    console.log("prenotazione in corso");
+    this._notifications.create("Prenotazione", "Prenotazione in corso...", "success", globals.confNotifications);
 
     this.http.post(globals.API + "prenota", this.roomReserv).subscribe((data) => {
-      console.log(data);
     });
   }
 
