@@ -1,5 +1,12 @@
 export const API = "http://localhost:8080/api/";
 
+export const confNotifications = {
+    timeOut: 4000,
+    showProgressBar: true,
+    pauseOnHover: true,
+    clickToClose: true
+};
+
 export function isLogged() {
     var token = getToken();
 
