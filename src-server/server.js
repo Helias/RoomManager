@@ -70,8 +70,6 @@ apiRoutes.get('/', function (req, res) {
  */
 apiRoutes.get('/auth', function (req, res, next) {
 
-  console.log('SELECT * FROM utenti WHERE username = "' + req.query.username + '" AND password = "' + req.query.password + '"');
-
   mc.query('SELECT * FROM utenti WHERE username = "' + req.query.username + '" AND password = "' + req.query.password + '"', function (error, results, fields) {
     if (error) throw error;
 
@@ -118,7 +116,7 @@ apiRoutes.post("/register", function (req, res) {
 
   mc.query("INSERT INTO utenti (`username`, `nome`, `cognome`, `email`, `password`) VALUES ('" + userData.username + "', '" + userData.nome + "', '" + userData.cognome + "', '" + userData.email + "', '" + userData.password + "')", function (error, results, fields) {
 		if (error) throw error;
-		res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+		res.send(JSON.stringify({"status": 200, "message": null, "response": results}));
   });
 
 });
@@ -171,35 +169,47 @@ apiRoutes.get("/prenotazioni", function(req, res) {
 // route middleware to verify a token
 apiRoutes.use(function (req, res, next) {
 
-  // check header or url parameters or post parameters for token
-  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  if (req.method === 'OPTIONS') {
+    var headers = {};
+    // IE8 does not allow domains to be specified, just the *
+    // headers["Access-Control-Allow-Origin"] = req.headers.origin;
+    headers["Access-Control-Allow-Origin"] = "*";
+    headers["Access-Control-Allow-Methods"] = "POST, GET, PUT, DELETE, OPTIONS";
+    headers["Access-Control-Allow-Credentials"] = false;
+    headers["Access-Control-Max-Age"] = '86400'; // 24 hours
+    headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept";
+    res.writeHead(200, headers);
+    res.end();
+  } else {
 
-  // decode token
-  if (token) {
+    // check header or url parameters or post parameters for token
+    var token = req.body.token || req.query.token || req.headers['x-access-token'];
 
-    // verifies secret and checks exp
-    jwt.verify(token, app.get('superSecret'), function (err, decoded) {
-      if (err) {
-        return res.json({
-          success: false,
-          message: 'Failed to authenticate token.'
-        });
-      } else {
-        // if everything is good, save to request for use in other routes
-        req.decoded = decoded;
-        next();
-      }
-    });
+    // decode token
+    if (token) {
 
-     } else {
+      // verifies secret and checks exp
+      jwt.verify(token, app.get('superSecret'), function (err, decoded) {
+        if (err) {
+          return res.json({
+            success: false,
+            message: 'Failed to authenticate token.'
+          });
+        } else {
+          // if everything is good, save to request for use in other routes
+          req.decoded = decoded;
+          next();
+        }
+      });
 
-    // if there is no token
-    // return an error
-    return res.status(403).send({
-      success: false,
-      message: 'No token provided.'
-    });
-
+    } else {
+      // if there is no token
+      // return an error
+      return res.status(403).send({
+        success: false,
+        message: 'No token provided.'
+      });
+    }
   }
 });
 
@@ -216,31 +226,48 @@ apiRoutes.use(function (req, res, next) {
 apiRoutes.post("/prenota", function (req, res) {
 
   var data = req.body.data;
-  var orario1 = req.body.orario1;
-  var orario2 = req.body.orario2;
+  var orario1 = req.body.orario1.substring(0, 2);
+  var orario2 = req.body.orario2.substring(0, 2);
   var id_aula = req.body.id_aula;
+  var professore = req.body.professore;
+  var descrizione = req.body.descrizione;
 
 	mc.query('SELECT * \
   FROM prenotazioni \
   WHERE giorno="' + data + '" AND id_aula=' + id_aula + ' \
   AND ( \
-       (' + orario1 + ' = SUBSTRING(orario1, 1, 2) AND ' + orario2 + ' = SUBSTRING(orario2, 1, 20)) -- stesso orario \
-    OR	 (' + orario1 + ' > SUBSTRING(orario1, 1, 2) AND ' + orario1 + ' < SUBSTRING(orario2, 1, 2)) 	-- ' + orario1 + ' compreso tra orario1 e orario2 \
-    OR   (' + orario2 + ' > SUBSTRING(orario1, 1, 2) AND ' + orario2 + ' < SUBSTRING(orario2, 1, 2))  -- ' + orario2 + ' compreso tra orario1 e orario2 \
-    OR	 (SUBSTRING(orario1, 1, 2) > ' + orario1 + ' AND SUBSTRING(orario1, 1, 2) < ' + orario2 + ') 	-- orario1 compreso tra ' + orario1 + ' e ' + orario2 + ' \
-    OR	 (SUBSTRING(orario2, 1, 2) > ' + orario1 + ' AND SUBSTRING(orario2, 1, 2) < ' + orario2 + ')	-- orario2 compreso tra ' + orario1 + ' e ' + orario2 + ' \
+       (' + orario1 + ' = SUBSTRING(orario1, 1, 2) AND ' + orario2 + ' = SUBSTRING(orario2, 1, 20)) /* stesso orario */ \
+    OR	 (' + orario1 + ' > SUBSTRING(orario1, 1, 2) AND ' + orario1 + ' < SUBSTRING(orario2, 1, 2)) /* ' + orario1 + ' compreso tra orario1 e orario2 */ \
+    OR   (' + orario2 + ' > SUBSTRING(orario1, 1, 2) AND ' + orario2 + ' < SUBSTRING(orario2, 1, 2)) /* ' + orario2 + ' compreso tra orario1 e orario2 */ \
+    OR	 (SUBSTRING(orario1, 1, 2) > ' + orario1 + ' AND SUBSTRING(orario1, 1, 2) < ' + orario2 + ') /* orario1 compreso tra ' + orario1 + ' e ' + orario2 + ' */ \
+    OR	 (SUBSTRING(orario2, 1, 2) > ' + orario1 + ' AND SUBSTRING(orario2, 1, 2) < ' + orario2 + ') /* orario2 compreso tra ' + orario1 + ' e ' + orario2 + ' */ \
   );', function (error, results, fields) {
     if (error) throw error;
 
     if (results.length == 0) {
 
+      mc.query("INSERT INTO `prenotazioni` (`id_aula`, `giorno`, `orario1`, `orario2`,`professore`, `descrizione`) VALUES \
+                (" + id_aula + ", '" + data + "', '" + orario1 + "', '" + orario2 + "', '" + professore + "', '" + descrizione + "')\
+          ;",  function (error, results, fields) {
+
+        if (error) throw error;
+
+        if (results)
+          res.send({
+            "status": 200,
+            "message": "Prenotazione effettuata!"
+          });
+        else
+          res.send({
+            "status": 200,
+            "message": "Errore durante la prenotazione."
+          });
+      });
     }
     else {
-      
       res.send({
         "status": 200,
-        "error": "",
-        "response": results
+        "message": "Questa prenotazione va in conflitto con altre prenotazioni!"
       });
     }
 

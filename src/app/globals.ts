@@ -1,7 +1,7 @@
 export const API = "http://localhost:8080/api/";
 
 export function isLogged() {
-    var token = localStorage.getItem('id_token');
+    var token = getToken();
 
     if (token == null || token == "")
         return false;
@@ -12,3 +12,7 @@ export function isLogged() {
 export function logout() {
     localStorage.removeItem("id_token");
 };
+
+export function getToken() {
+    return localStorage.getItem('id_token');
+}

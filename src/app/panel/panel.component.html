@@ -12,21 +12,21 @@
       <div class="row justify-content-center">
         <div class="col-12">
             <div class="form-inline justify-content-center">
-              <label>Data:</label>
-              <input type="date" class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder="01/01/2018">  
+              <label>Data: &nbsp;</label>
+              <input type="date" class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder="01/01/2018" [(ngModel)]="data">
             </div>
-        </div>
-      </div>
 
-      <br>
-
-      <div class="row justify-content-center">
-        <div class="col-12">
+          <br>
 
           <div class="form-inline justify-content-center">
-            <label>Orario</label>
+            <label>Aula: &nbsp; </label>
+            <select [(ngModel)]="roomReserv.id_aula">
+              <option *ngFor="let a of aule" [value]="a.ID">{{ a.nome }}</option>
+            </select>
+
+            <label>&nbsp; &nbsp; Orario</label>
             &nbsp; da: &nbsp; 
-            <select>
+            <select [(ngModel)]="roomReserv.orario1">
               <option value="08:00">08:00</option>
               <option value="09:00">09:00</option>
               <option value="10:00">10:00</option>
@@ -41,7 +41,7 @@
               <option value="19:00">19:00</option>
             </select>
             &nbsp; a: &nbsp;
-            <select>
+            <select [(ngModel)]="roomReserv.orario2">
                 <option value="08:00">08:00</option>
                 <option value="09:00">09:00</option>
                 <option value="10:00">10:00</option>
@@ -57,20 +57,21 @@
               </select>
             </div>
 
-        </div>
-      </div>
+            <br>
 
-      <br>
-
-      <div class="row justify-content-center">
-        <div class="col-12">
             <div class="form-inline justify-content-center">
-              <label>Aula: &nbsp; </label>
-              <select>
-                <option *ngFor="let a of aule" [value]="a.ID">{{ a.nome }}</option>
-              </select>
+              <label>Professore: &nbsp; </label>
+              <input type="text" [(ngModel)]="roomReserv.professore">
             </div>
-        </div>
+
+            <br>
+
+            <div class="form-inline justify-content-center">
+              <label>Descrizione: &nbsp; </label>
+              <input type="text" [(ngModel)]="roomReserv.descrizione  ">
+            </div>
+
+          </div>
       </div>
 
     
